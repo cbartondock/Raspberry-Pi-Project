@@ -3,5 +3,12 @@ ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=2, xonxoff=False, rtscts=False
 ser.flushInput()
 ser.flushOutput()
 while True:
-	btr=ser.readline()
-	print(btr)
+    btr=ser.readline()
+    parts=btr.split(',')
+    if(parts[0]=="$GPRMC"):
+        print(btr)
+        for i in range(0,len(parts)):
+            if parts[i] == 'N' or parts[i] =='S':
+                latitude = float(parts[i-1])
+            if parts[i] == 'W' or parts[i] == 'E':
+                longitude = float(parts[i-1])
