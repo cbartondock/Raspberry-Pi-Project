@@ -21,5 +21,5 @@ while GPIO.input(pin)==0:
 	starttime=time.time()
 while GPIO.input(pin)==1:
 	endtime=time.time()
-duration= endtime-starttime	
+duration= endtime-starttime
 print(str(17015*duration))
