@@ -3,32 +3,7 @@ import time
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BOARD)
 pin=11
-
-db = MySQLdb.connect("sql5.freesqldatabase.com","sql574954","cM7*lB7!","sql574954")
-
-cursor = db.cursor()
-clear = "TRUNCATE TABLE SENSORS"
-insertvals = "INSERT INTO SENSORS(GPSLAT,GPSLONG,ULTRA,TIME) VALUES ('{lat}','{lon}','{ultra}','{time}')"
-cursor.execute(clear)
-for i in range(0,100):
-    measurement = measure()
-    time.sleep(.000007)
-    currenttime=time.strftime('%Y-%m-%d %H:%M:%S')
-    print("({0},{1})".format(currenttime,measurement))
-    try:
-        cursor.execute(insertvals.format(lat=0,lon=0,ultra=measurement,time=currenttime))
-        db.commit()
-    except:
-        print("insert failed")
-        db.rollback()
-db.close()
-
-
-
-
-
-
-def measure():
+def measure_ultra():
     GPIO.setup(pin,GPIO.OUT)
 
     #zero output
@@ -48,3 +23,30 @@ def measure():
         endtime=time.time()
     duration= endtime-starttime
     return 17015*duration
+
+db = MySQLdb.connect("sql5.freesqldatabase.com","sql574954","cM7*lB7!","sql574954")
+
+cursor = db.cursor()
+clear = "TRUNCATE TABLE SENSORS"
+insertvals = "INSERT INTO SENSORS(GPSLAT,GPSLONG,ULTRA,TIME) VALUES ('{lat}','{lon}','{ultra}','{time}')"
+cursor.execute(clear)
+#for i in range(0,100):
+while True:
+    measurement = measure_ultra()
+    time.sleep(.000007)
+    currenttime=time.strftime('%Y-%m-%d %H:%M:%S')
+    print("({0},{1})".format(currenttime,measurement))
+    try:
+        cursor.execute(insertvals.format(lat=0,lon=0,ultra=measurement,time=currenttime))
+        db.commit()
+    except:
+        print("insert failed")
+        db.rollback()
+db.close()
+
+
+
+
+
+
+
