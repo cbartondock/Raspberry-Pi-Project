@@ -1,23 +1,29 @@
-import RPi.GPIO as GPIO
+import wiringpi2 as wp
 import pygame
+import os
+os.environ["SDL_VIDEODRIVER"] = "dummy"
+screen = pygame.display.set_mode((200,200))
+wp.wiringPiSetupPhys()
 
 pygame.init()
 pygame.key.set_repeat(100,100)
-GPIO.setmode(GPIO.BOARD)
 
 rpins =[29,31,33,35,37]
-tpins[12,11,13,15,16]
+tpins=[12,11,13,15,16]
 
 ron =[0,0,0,0,0]
 ton =[0,0,0,0,0]
 
 for rpin in rpins:
-    GPIO.setup(rpin, GPIO.OUT)
-    GPIO.output(rpin,0)
+    print(rpin)
+    wp.pinMode(rpin,1)
+    wp.digitalWrite(rpin,0)
+print("\n\n")
 for tpin in tpins:
-    GPIO.setup(tpin, GPIO.OUT)
-    GPIO.output(tpin,0)
-
+    print(tpin)
+    wp.pinMode(tpin,1)
+    wp.digitalWrite(tpin,0)
+print("\n")
 thrust=0
 thrustmax=31
 rot=0
@@ -29,6 +35,7 @@ bitarray32 = lambda n: map(int,list("0"*(5-len(bin(n)[2:]))+bin(n)[2:]))
 while True:
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
+	    print("keypress")
             if event.key == pygame.K_w:
                 if thrust <thrustmax:
                     thrust+=1
@@ -44,8 +51,10 @@ while True:
             ton = bitarray32(thrust)
             ron = bitarray32(rot)
             for i in range(0,5):
-                GPIO.output(tpins[i],ton[i])
-                GPIO.output(rpins[i],ron[i])
+                wp.digitalWrite(tpins[i],ton[i])
+                wp.digitalWrite(rpins[i],ron[i])
+		print("thrust is: " + str(thrust))
+		print("rot is: " + str(rot))
 
 
 
