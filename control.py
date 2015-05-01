@@ -1,8 +1,4 @@
 import wiringpi2 as wp
-import pygame
-import os
-os.environ["SDL_VIDEODRIVER"] = "dummy"
-screen = pygame.display.set_mode((200,200))
 wp.wiringPiSetupPhys()
 
 pygame.init()
@@ -33,28 +29,27 @@ rotmax=31
 bitarray32 = lambda n: map(int,list("0"*(5-len(bin(n)[2:]))+bin(n)[2:]))
 
 while True:
-    for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-	    print("keypress")
-            if event.key == pygame.K_w:
-                if thrust <thrustmax:
-                    thrust+=1
-            if event.key == pygame.K_s:
-                if thrust>0:
-                    thrust-=1
-            if event.key == pygame.K_d:
-                if rot < rotmax:
-                    rot+=1
-            if event.key == pygame.K_a:
-                if rot>0:
-                    rot-=1
-            ton = bitarray32(thrust)
-            ron = bitarray32(rot)
-            for i in range(0,5):
-                wp.digitalWrite(tpins[i],ton[i])
-                wp.digitalWrite(rpins[i],ron[i])
-		print("thrust is: " + str(thrust))
-		print("rot is: " + str(rot))
+    key = raw_input("-->")
+    print("keypress")
+    if key =="w":
+        if thrust <thrustmax:
+            thrust+=1
+    if key== "s":
+        if thrust>0:
+            thrust-=1
+    if key =="d":
+        if rot < rotmax:
+            rot+=1
+    if key=="a":
+        if rot>0:
+            rot-=1
+    ton = bitarray32(thrust)
+    ron = bitarray32(rot)
+    for i in range(0,5):
+        wp.digitalWrite(tpins[i],ton[i])
+        wp.digitalWrite(rpins[i],ron[i])
+    print("thrust is: " + str(thrust))
+    print("rot is: " + str(rot))
 
 
 
