@@ -1,43 +1,42 @@
 import MySQLdb
+import wiringpi2 as wp
 import time
-import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BOARD)
-pin=11
-def measure_ultra():
-    GPIO.setup(pin,GPIO.OUT)
+wp.wiringPiSetupPhys()
+def measure_ultra(pin):
+    wp.pinMode(pin,1)
 
     #zero output
-    GPIO.output(pin,0)
+    wp.digitalWrite(pin,0)
     time.sleep(.000002)
 
     #send signal
-    GPIO.output(pin,1)
+    wp.digitalWrite(pin,1)
     time.sleep(.000005)
-    GPIO.output(pin,0)
+    wp.digitalWrite(pin,0)
 
     #receive signal
-    GPIO.setup(pin,GPIO.IN)
-    while GPIO.input(pin)==0:
+    wp.pinMode(pin,0)
+    while wp.digitalRead(pin)==0:
         starttime=time.time()
-    while GPIO.input(pin)==1:
+    while wp.digitalRead(pin)==1:
         endtime=time.time()
     duration= endtime-starttime
     return 17015*duration
 
-db = MySQLdb.connect("sql5.freesqldatabase.com","sql574954","cM7*lB7!","sql574954")
+db = MySQLdb.connect("sql4.freesqldatabase.com","sql476380","eW4%sG5%","sql476380")
 
 cursor = db.cursor()
 clear = "TRUNCATE TABLE SENSORS"
-insertvals = "INSERT INTO SENSORS(GPSLAT,GPSLONG,ULTRA,TIME) VALUES ('{lat}','{lon}','{ultra}','{time}')"
+insertvals = "INSERT INTO SENSORS(GPSLAT,GPSLONG,ULTRAF,ULTRAB,ULTRAL,ULTRAR,TIME) VALUES ('{lat}','{lon}','{ultraf}','ultrab','ultral','ultrar','{time}')"
 cursor.execute(clear)
 #for i in range(0,100):
 while True:
-    measurement = measure_ultra()
+    measurement = measure_ultra(32)
     time.sleep(.000007)
     currenttime=time.strftime('%Y-%m-%d %H:%M:%S')
     print("({0},{1})".format(currenttime,measurement))
     try:
-        cursor.execute(insertvals.format(lat=0,lon=0,ultra=measurement,time=currenttime))
+        cursor.execute(insertvals.format(lat=0,lon=0,ultraf=measurement,ultrab=0.1,ultral=0.1,ultrar=0.1,time=currenttime))
         db.commit()
     except:
         print("insert failed")

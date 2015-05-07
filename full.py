@@ -1,5 +1,7 @@
 import time
 import wiringpi2 as wp
+from getch import getch
+
 wp.wiringPiSetupPhys()
 
 def measure_ultra(pin):
@@ -60,7 +62,7 @@ cursor.execute(clear)
 
 try:
     while True:
-        key = raw_input("-->")
+        key = getch()
     print("keypress")
     if key =="f":
         umeasure = [measure_ultra(i) for i in ultrapins]
